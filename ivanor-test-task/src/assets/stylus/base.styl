@@ -29,6 +29,8 @@ button
 	font-weight: inherit
 	font-size: inherit
 	color inherit
+	&:hover
+		cursor pointer //for safari
 
 img
 	max-width: 100%;
@@ -40,13 +42,13 @@ body
 	@supports(min-height: 100dvh)
 		min-height: 100dvh
 	font-family $GothamPro
-	font-size: 12px
+	font-size: rem(12)
 	font-weight: 400
 	line-height normal
 	color: $textMain
 	background-color: $bgMain
 	@media $desktop
-		font-size: 14px
+		font-size: rem(14)
 
 
 
