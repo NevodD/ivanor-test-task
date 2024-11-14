@@ -32,9 +32,6 @@ class Request {
 			const timer = setTimeout(() => {appStore.loader = true}, 500);
 			fetch(url, {headers, options})
 			.then(response => {
-				if(!response.ok) {
-					appStore.error = true
-				}
 				resolve(response)
 				clearTimeout(timer)
 			})

@@ -1,5 +1,12 @@
 <template>
   <div v-if="!appStore.error" class="orders main-wrapper">
+    <div class="orders__search">
+      <input class="orders__input" :type="formData.search.type" :name="formData.search.name" inputmode="numeric" :placeholder="formData.search.placeholder" :value="formData.search.value" @input="formData.search.value = $event.target.value, validateInput(formData.search)">
+      <button class="main-button orders__button" :disabled="formData.search.error || !formData.search.value" @click="searchOrder(formData.search.value)">Поиск</button>
+      <p v-if="searchError" class="orders__search-error">{{ searchError }}</p>
+      <p v-if="formData.search.error" class="orders__error">{{ formData.search.error }}</p>
+    </div>
+      
     <table v-if="orders.length" class="orders__table">
       <caption class="orders__caption">Найдено {{ orders.length }} {{ totalCurrentQuantityWord }}</caption>
       <tr class="orders__row">
@@ -30,13 +37,16 @@
 </template>
 
 <script setup>
-  import { ref, computed, onMounted, watch } from 'vue';
+  import { ref, computed, onMounted, watch, reactive } from 'vue';
   import { useAppStore } from '@/stores/app.js'
   import { useOrdersStore } from '@/stores/orders';
   import Loader from '@/components/Loader.vue';
   import LoaderMini from '@/components/LoaderMini.vue';
   import ErrorPage from '@/components/ErrorPage.vue';
   import ModalsInfoAboutOrder from '@/components/modals/ModalsInfoAboutOrder.vue';
+  import { useValidate } from '@/assets/js/validate.js';
+
+  const { validateInput, onlyNumbers, orderLength } = useValidate();
 
   const appStore = useAppStore()
   const ordersStore = useOrdersStore()
@@ -48,7 +58,20 @@
     return orders.value.length > preparedOrders.value.length
   })
   const loaderMiniHidden = ref(true)
+
+  const searchError = ref('')
   
+  const formData = reactive({
+    search: {
+      name: 'search',
+      type: 'text',
+      placeholder: 'Поиск по номеру заказа',
+      value: '',
+      error: '',
+      validators: [onlyNumbers],
+      validate: false,
+    }
+  })
   
   const orders = computed(() => {
     return ordersStore.orders
@@ -115,9 +138,22 @@
     ordersStore.getInfoAboutOrder(id)
   }
 
+  const searchOrder = async (id) => {
+    searchError.value = await ordersStore.getInfoAboutOrder(id)
+  }
+
   watch(() => orders.value, () => {
     if(loaderMiniShow.value) {
       loadMore()
+    }
+  })
+
+  watch(() => formData.search.value, () => {
+    if(formData.search.value) {
+      formData.search.value = formData.search.value.replace(/[^\d]/g, '');
+      if(searchError.value) {
+        searchError.value = ''
+      }
     }
   })
 
@@ -134,6 +170,20 @@
     padding-bottom rem(60)
     overflow-x auto
 
+    &__search
+      display grid
+      grid-template-columns 1fr max-content
+      column-gap rem(20)
+      row-gap rem(5)
+
+    &__input
+      border rem(1) solid $bordertTable
+      padding rem(10)
+
+    &__error
+      color $textError
+      font-size rem(12)
+
     &__table
       width 100%
       border-collapse collapse
@@ -146,8 +196,9 @@
       padding rem(20) rem(10)
 
     &__row:not(:first-of-type)
-      &:hover
-        cursor pointer
+      @media $hover
+        &:hover
+          cursor pointer
 
     &__th
     &__td

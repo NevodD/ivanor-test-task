@@ -91,7 +91,7 @@
 					</li>
 				</ul>
 			</div>
-			<button class="modals-info-about-order__close" @click="closeModals"></button>
+			<button class="modals-info-about-order__close" @click="closeModals"><span class="visually-hidden">закрыть модальное окно</span></button>
 		</div>
 	</div>
 </template>
@@ -207,7 +207,8 @@
 			background-size rem(20)
 			background-repeat no-repeat
 			background-position 20% 70%
-			&:hover
-				cursor pointer
-		
+			@media $hover
+				&:hover
+					cursor pointer
+			
 </style>

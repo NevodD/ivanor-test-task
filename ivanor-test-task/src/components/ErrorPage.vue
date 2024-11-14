@@ -1,7 +1,7 @@
 <template>
 	<div class="error-page">
 		<h2 class="error-page__title">Ошибка</h2>
-		<button class="error-page__error-button" @click="closeErrorPage()">
+		<button class="main-button error-page__error-button" @click="closeErrorPage()">
 			повторить
 		</button>
 	</div>
@@ -13,8 +13,7 @@ import { useAppStore } from '@/stores/app'
 const appStore = useAppStore()
 
 const closeErrorPage = () => {
-	location.reload()
-	appStore.errors = false
+	appStore.error = false
 }
 
 </script>
@@ -37,15 +36,4 @@ const closeErrorPage = () => {
 			line-height: 1.3
 			text-align: center
 
-		&__error-button
-			display flex
-			justify-content center
-			align-items center
-			font-weight: 500
-			line-height: 1.3
-			text-align: center
-			color: $textContrast
-			background-color: $bgContrast
-			padding: rem(12) rem(20)
-			text-transform uppercase
 </style>
