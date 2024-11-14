@@ -1,6 +1,5 @@
 <template>
   <div class="orders main-wrapper">
-    тест
     <table v-if="orders.length >= 0" class="orders__table">
       <caption class="orders__caption">Найдено {{ orders.length }} {{ totalCurrentQuantityWord }}</caption>
       <tr class="orders__row">
