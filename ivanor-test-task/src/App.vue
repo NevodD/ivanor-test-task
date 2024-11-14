@@ -1,10 +1,45 @@
 <template>
   <div v-if="!appStore.error" class="orders main-wrapper">
     <div class="orders__search">
-      <input class="orders__input" :type="formData.search.type" :name="formData.search.name" inputmode="numeric" :placeholder="formData.search.placeholder" :value="formData.search.value" @input="formData.search.value = $event.target.value, validateInput(formData.search)">
-      <button class="main-button orders__button" :disabled="formData.search.error || !formData.search.value" @click="searchOrder(formData.search.value)">Поиск</button>
+      <div class="orders__search-wrapper">
+        <label class="orders__label">
+          <input class="orders__input" :type="formData.search.type" :name="formData.search.name" inputmode="numeric" :placeholder="formData.search.placeholder" :value="formData.search.value" @input="formData.search.value = $event.target.value, validateInput(formData.search)">
+          <span v-if="formData.search.error" class="orders__error">{{ formData.search.error }}</span>
+        </label>
+        <button class="main-button orders__button" @click="searchOrder">искать</button>
+      </div>
       <p v-if="searchError" class="orders__search-error">{{ searchError }}</p>
-      <p v-if="formData.search.error" class="orders__error">{{ formData.search.error }}</p>
+    </div>
+    <div class="orders__filters">
+      <div class="orders__filters-wrapper">
+        <label class="orders__label">
+          <span class="orders__placeholder">
+            {{ formData.dateFrom.placeholder }}
+          </span>
+          <input class="orders__input" :type="formData.dateFrom.type" :name="formData.dateFrom.name" inputmode="numeric" v-model="formData.dateFrom.value" :min="formData.dateFrom.min" :max="formData.dateFrom.max" @change="validateInput(formData.dateFrom)">
+          <span v-if="formData.dateFrom.error" class="orders__error">{{ formData.dateFrom.error }}</span>
+        </label>
+        <label class="orders__label">
+          <span class="orders__placeholder">
+            {{ formData.dateTo.placeholder }}
+          </span>
+          <input class="orders__input" :type="formData.dateTo.type" :name="formData.dateTo.name" inputmode="numeric" v-model="formData.dateTo.value" :min="formData.dateTo.min" :max="formData.dateTo.max" @change="validateInput(formData.dateTo)">
+          <span v-if="formData.dateTo.error" class="orders__error">{{ formData.dateTo.error }}</span>
+        </label>
+        <div v-if="formData.status.items.length" class="orders__select-wrapper" :class="{ active: toggleSelect }">
+          <button class="orders__select-button" @click="toggleSelect = !toggleSelect">Статус заказа</button>
+          <ul class="orders__select">
+            <li class="orders__option" v-for="item in formData.status.items" :key="item.id">
+              <label class="orders__label-checkbox">
+                {{ item.title }}
+                <input class="input-hidden" :type="formData.status.type" :name="formData.status.name" :value="item.id" v-model="formData.status.value" @change="validateInput(formData.status)">
+              </label>
+            </li>
+          </ul>
+        </div>
+        <button class="main-button orders__button" @click="filtersOrder">искать</button>
+      </div>
+      <p v-if="filtersError" class="orders__search-error">{{ filtersError }}</p>
     </div>
       
     <table v-if="orders.length" class="orders__table">
@@ -53,6 +88,35 @@
 
   const headersForTable = ['Номер заказа (ID)', 'Дата-время создания заказа', 'Статус заказа', 'Тип отгрузки', 'Дата отгрузки', 'Способ оплаты', 'Место отгрузки (адрес&nbsp;магазина)', 'ФИО клиента', 'Сумма заказа', 'Количество товаров в&nbsp;заказе', 'Кто создал заказ (оператор)']
 
+  const variantsStatusOrder = [
+    {
+      id: 1,
+      title: 'Заказ обрабатывается'
+    },
+    {
+      id: 2,
+      title: 'Заказ обработан'
+    },
+    {
+      id: 3,
+      title: 'Не хватило товара для резервирования'
+    },
+    {
+      id: 4,
+      title: 'Заказ выполнен'
+    },
+    {
+      id: 5,
+      title: 'Заказ отменен'
+    },
+    {
+      id: 6,
+      title: 'Заказ зарезервирован'
+    }
+  ]
+
+  const toggleSelect = ref(false)
+
   const loaderMini = ref(null)
   const loaderMiniShow = computed(() => {
     return orders.value.length > preparedOrders.value.length
@@ -60,6 +124,8 @@
   const loaderMiniHidden = ref(true)
 
   const searchError = ref('')
+
+  const filtersError = ref('')
   
   const formData = reactive({
     search: {
@@ -70,7 +136,35 @@
       error: '',
       validators: [onlyNumbers],
       validate: false,
-    }
+    },
+    dateFrom: {
+      name: 'dateFrom',
+      type: 'date',
+      value: '2024-05-01',
+      error: '',
+      placeholder: 'От даты',
+      validate: false,
+      min: '2024-05-01',
+      max: '2024-06-30'
+    },
+    dateTo: {
+      name: 'date-to',
+      type: 'date',
+      placeholder: 'До даты',
+      value: '2024-06-30',
+      error: '',
+      validate: false,
+      min: '2024-05-01',
+      max: '2024-06-30'
+    },
+    status: {
+      name: 'status',
+      type: 'checkbox',
+      value: [],
+      error: '',
+      validate: false,
+      items: variantsStatusOrder
+    },
   })
   
   const orders = computed(() => {
@@ -138,14 +232,32 @@
     ordersStore.getInfoAboutOrder(id)
   }
 
-  const searchOrder = async (id) => {
-    searchError.value = await ordersStore.getInfoAboutOrder(id)
+  const searchOrder = async () => {
+    if(formData.search.value) {
+      searchError.value = await ordersStore.getInfoAboutOrder(formData.search.value)
+    } else {
+      searchError.value = 'Введите номер заказа'
+    }
+  }
+
+  const filtersOrder = async () => {
+    toggleSelect.value = false
+    if(formData.dateFrom.value || formData.dateTo.value || formData.status.value) {
+      const parameters = {
+        dateFrom: formData.dateFrom.value,
+        dateTo: formData.dateTo.value,
+        orderStatus: formData.status.value
+      }
+      filtersError.value = await ordersStore.getOrders(parameters)
+    } else {
+      filtersError.value = 'Выберите параметры поиска'
+    }
   }
 
   watch(() => orders.value, () => {
-    if(loaderMiniShow.value) {
+      limits.value = 0
+      preparedOrders.value = []
       loadMore()
-    }
   })
 
   watch(() => formData.search.value, () => {
@@ -164,25 +276,126 @@
   .orders
     display flex
     flex-direction column
-    justify-content center
     row-gap rem(50)
     padding-top rem(40) 
     padding-bottom rem(60)
     overflow-x auto
+    min-height 100vh
+    @supports (min-height: 100dvh)
+      min-height 100dvh
 
     &__search
+      display flex
+      flex-direction column
+      row-gap rem(5)
+
+    &__search-wrapper
       display grid
       grid-template-columns 1fr max-content
+      align-items start
       column-gap rem(20)
       row-gap rem(5)
 
+    &__label
+      position relative
+      display flex
+      flex-direction column
+      row-gap rem(5)
+
+    &__label:has(.orders__input[type=date])
+      margin-top rem(15)
+      @media $desktop
+        margin-top 0
+
+    &__label-checkbox
+      display flex
+      align-items center
+      padding rem(5)
+      min-height rem(30)
+      @media $hover
+        &:hover
+          cursor pointer
+
+    &__label-checkbox:has(:checked)
+      background-color rgba($bgContrast, 0.1)
+
     &__input
+      padding rem(13) rem(20)
       border rem(1) solid $bordertTable
-      padding rem(10)
+
+    &__input[type=date]
+      position relative
+
+    &__input[type=date]::before
+      display block
+      content attr(data-placeholder)
+      position absolute
+      left 0
+      top 0
+
+    &__placeholder
+      position absolute
+      left 0
+      bottom 110%
+      z-index 1
+
+    &__select-wrapper
+      position relative
+
+    &__select-wrapper.active
+      .orders__select
+        visibility visible
+        max-height 100vh
+
+      .orders__select-button:after
+        transform rotateX(180deg)
+
+    &__select-button
+      width 100%
+      text-align left
+      padding rem(14) rem(20)
+      border rem(1) solid $bordertTable
+
+    &__select-button:after
+      content ''
+      position absolute
+      top rem(12)
+      right rem(10)
+      width rem(20)
+      height rem(20)
+      background-image url('@/assets/img/icons/arrow-down.svg')
+      background-size rem(15)
+      background-repeat no-repeat
+      background-position 50%
+      transition $transition-duration
+
+    &__select
+      position absolute
+      top calc(100% - 0.1rem)
+      left 0
+      right 0
+      max-height 0
+      border-left rem(1) solid $bordertTable
+      border-right rem(1) solid $bordertTable
+      border-bottom rem(1) solid $bordertTable
+      background-color $bgMain
+      visibility hidden
+      overflow hidden
+      transition $transition-duration
 
     &__error
       color $textError
       font-size rem(12)
+
+    &__filters-wrapper
+      display grid
+      grid-template-columns 1fr
+      align-items start
+      row-gap rem(20)
+      @media $desktop
+        grid-template-columns repeat(3, 1fr) max-content
+        column-gap rem(20)
+        row-gap rem(5)
 
     &__table
       width 100%
