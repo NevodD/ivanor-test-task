@@ -6,17 +6,17 @@
         <th class="orders__th" v-for="header in headersForTable" :key="header" v-html="header"></th>
       </tr>
       <tr class="orders__row" v-for="order in preparedOrders" :key="order.id">
-        <td class="orders__td">{{ order.id }}</td>
+        <td class="orders__td text-center">{{ order.id }}</td>
         <td class="orders__td">{{ order.created }}</td>
-        <td class="orders__td" :class="{ 'orders__td_dark-green': order.status.id === 4, 'orders__td_green': order.status.id === 6, 'orders__td_red': order.status.id === 5}">{{ order.status.title }}</td>
+        <td class="orders__td" :class="{ 'orders__td_completed': order.status.id === 4, 'orders__td_reserved': order.status.id === 6, 'orders__td_cancelled': order.status.id === 5}">{{ order.status.title }}</td>
         <td class="orders__td">{{ order.shipment.method.title }}</td>
         <td class="orders__td">{{ order.shipment.date }}</td>
         <td class="orders__td">{{ order.payment.method.title }}</td>
         <td class="orders__td">{{ order.shop.title }}</td>
         <td class="orders__td">{{ order.client.lastname }} {{ order.client.firstname }}</td>
-        <td class="orders__td">{{ order.amount }}</td>
-        <td class="orders__td">{{ order.quantity }}</td>
-        <td class="orders__td">{{ order.operator }}</td>
+        <td class="orders__td text-center">{{ order.amount }}</td>
+        <td class="orders__td text-center">{{ order.quantity }}</td>
+        <td class="orders__td text-center">{{ order.operator }}</td>
       </tr>
     </table>
     <div v-if="loaderMiniShow" class="orders__loader-mini" :class="{ 'hidden': loaderMiniHidden }" ref="loaderMini">
@@ -121,6 +121,32 @@
     row-gap rem(50)
     padding-top rem(40) 
     padding-bottom rem(60)
+
+    &__table
+      width 100%
+      border-collapse collapse
+      overflow hidden
+
+    &__caption
+      border-top rem(1) solid $bordertTable
+      border-left rem(1) solid $bordertTable
+      border-right rem(1) solid $bordertTable
+      padding rem(20) rem(10)
+
+    &__th
+    &__td
+      border rem(1) solid $bordertTable
+      padding rem(5)
+
+    &__td_completed
+      background-color darken($bgSuccess, 30)
+      color: $textContrast
+
+    &__td_reserved
+      background-color $bgSuccess
+
+    &__td_cancelled
+      background-color $bgError
 
     &__loader-mini.hidden
       visibility hidden
