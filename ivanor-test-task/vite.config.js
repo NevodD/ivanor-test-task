@@ -5,7 +5,9 @@ import vue from '@vitejs/plugin-vue'
 
 // https://vite.dev/config/
 export default defineConfig({
-  publicPath: '/',
+  publicPath: process.env.NODE_ENV === 'production'
+  ? '/ivanor-test-task/'
+  : '/',
   plugins: [
     vue(),
   ],
