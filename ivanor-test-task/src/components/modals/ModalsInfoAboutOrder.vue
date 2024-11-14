@@ -1,6 +1,6 @@
 <template>
 	<div class="modals-info-about-order freeze-scroll">
-		<div class="modals-info-about-order__wrapper">
+		<div class="modals-info-about-order__wrapper" :class="{ close }">
 			<h2 class="modals-info-about-order__title">Информация о заказе</h2>
 			<div class="modals-info-about-order__inner">
 				<ul class="modals-info-about-order__inner-list">
@@ -97,16 +97,23 @@
 </template>
 
 <script setup>
-	import { computed } from 'vue';
+	import { ref, computed } from 'vue';
 	import { useOrdersStore } from '@/stores/orders';
 	const ordersStore = useOrdersStore()
+
+	const close = ref(false)
 
 	const infoAboutOrder = computed(() => {
 		return ordersStore.infoAboutOrder
 	})
 
 	const closeModals = () => {
-		ordersStore.infoAboutOrder = null
+		close.value = true
+		setTimeout(() => {
+			ordersStore.infoAboutOrder = null
+			close.value = false
+		}, 300)
+	
 	}
 </script>
 
@@ -137,11 +144,15 @@
 				height 90dvh
 			overflow hidden
 			box-shadow 0px 0px rem(20) rgba(0, 0, 0, 0.1)
+			animation visible-item 0.3s linear
 			@media $desktop
 				width 60%
 				max-height 80vh
 				@supports (max-height: 80dvh)
 					max-height 80dvh
+
+			&.close
+				animation hidden-item 0.5s linear
 
 		&__title
 			font-weight: 500
