@@ -1,5 +1,5 @@
 <template>
-	<div class="modals-info-about-order freeze-scroll">
+	<div class="modals-info-about-order freeze-scroll" :class="{ close }">
 		<div class="modals-info-about-order__wrapper" :class="{ close }">
 			<h2 class="modals-info-about-order__title">Информация о заказе</h2>
 			<div class="modals-info-about-order__inner">
@@ -126,6 +126,10 @@
 		inset: 0
 		background-color rgba($bgMain, 0.8)
 		z-index 100
+		animation visible-item-opacity $transition-duration linear
+
+		&.close
+			animation hidden-item-opacity 0.5s linear
 
 		&__wrapper
 			display flex
@@ -144,7 +148,7 @@
 				height 90dvh
 			overflow hidden
 			box-shadow 0px 0px rem(20) rgba(0, 0, 0, 0.1)
-			animation visible-item 0.3s linear
+			animation visible-item $transition-duration linear
 			@media $desktop
 				width 60%
 				max-height 80vh
