@@ -48,12 +48,10 @@
   
   
   const orders = computed(() => {
-    return ordersStore.orders.slice(0, 556)
+    return ordersStore.orders
   })
 
-  const preparedOrders = computed(() => {
-    return orders.value.slice(0, limits.value)
-  })
+  const preparedOrders = ref([])
 
   const totalCurrentQuantity = computed(() => {
     return orders.value.length
@@ -100,6 +98,7 @@
     } else {
       limits.value += orders.value.length - preparedOrders.value.length
     }
+    preparedOrders.value = orders.value.slice(0, limits.value)
     setTimeout(() => {
       loaderMiniHidden.value = true
     })
