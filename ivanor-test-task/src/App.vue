@@ -1,11 +1,11 @@
 <template>
-  <div class="orders main-wrapper">
-    <table v-if="orders.length >= 0" class="orders__table">
+  <div v-if="!appStore.error" class="orders main-wrapper">
+    <table v-if="orders.length" class="orders__table">
       <caption class="orders__caption">Найдено {{ orders.length }} {{ totalCurrentQuantityWord }}</caption>
       <tr class="orders__row">
         <th class="orders__th" v-for="header in headersForTable" :key="header" v-html="header"></th>
       </tr>
-      <tr class="orders__row" v-for="order in preparedOrders" :key="order.id">
+      <tr class="orders__row" v-for="order in preparedOrders" :key="order.id" @click="getInfoAboutOrder(order.id)">
         <td class="orders__td text-center">{{ order.id }}</td>
         <td class="orders__td">{{ order.created }}</td>
         <td class="orders__td" :class="{ 'orders__td_completed': order.status.id === 4, 'orders__td_reserved': order.status.id === 6, 'orders__td_cancelled': order.status.id === 5}">{{ order.status.title }}</td>
@@ -19,10 +19,12 @@
         <td class="orders__td text-center">{{ order.operator }}</td>
       </tr>
     </table>
+    <p v-else class="orders__empty">Ничего не найдено</p>
     <div v-if="loaderMiniShow" class="orders__loader-mini" :class="{ 'hidden': loaderMiniHidden }" ref="loaderMini">
       <LoaderMini />
     </div>
   </div>
+  <ModalsInfoAboutOrder v-if="infoAboutOrder" />
   <Loader v-if="appStore.loader" />
   <ErrorPage v-if="appStore.error" />
 </template>
@@ -34,6 +36,7 @@
   import Loader from '@/components/Loader.vue';
   import LoaderMini from '@/components/LoaderMini.vue';
   import ErrorPage from '@/components/ErrorPage.vue';
+  import ModalsInfoAboutOrder from '@/components/modals/ModalsInfoAboutOrder.vue';
 
   const appStore = useAppStore()
   const ordersStore = useOrdersStore()
@@ -49,6 +52,10 @@
   
   const orders = computed(() => {
     return ordersStore.orders
+  })
+
+  const infoAboutOrder = computed(() => {
+    return ordersStore.infoAboutOrder
   })
 
   const preparedOrders = ref([])
@@ -104,6 +111,10 @@
     })
   }
 
+  const getInfoAboutOrder = (id) => {
+    ordersStore.getInfoAboutOrder(id)
+  }
+
   watch(() => orders.value, () => {
     if(loaderMiniShow.value) {
       loadMore()
@@ -121,6 +132,7 @@
     row-gap rem(50)
     padding-top rem(40) 
     padding-bottom rem(60)
+    overflow-x auto
 
     &__table
       width 100%
@@ -132,6 +144,10 @@
       border-left rem(1) solid $bordertTable
       border-right rem(1) solid $bordertTable
       padding rem(20) rem(10)
+
+    &__row:not(:first-of-type)
+      &:hover
+        cursor pointer
 
     &__th
     &__td
@@ -147,6 +163,11 @@
 
     &__td_cancelled
       background-color $bgError
+
+    &__empty
+      border rem(1) solid $bordertTable
+      padding rem(20) rem(10)
+      text-align center
 
     &__loader-mini.hidden
       visibility hidden

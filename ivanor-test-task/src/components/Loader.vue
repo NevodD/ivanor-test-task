@@ -1,36 +1,11 @@
 <template>
-	<div class="loader">
+	<div class="loader freeze-scroll">
 		<img src="@/assets/img/loader.gif" alt="Идёт загрузка" width="50" height="50">
 	</div>
 </template>
 
 <script setup>
-import { onMounted, onUnmounted } from 'vue'
 
-onMounted(() => {
-	const body = document.querySelector('body')
-	let scrollBarWidth = 0
-	if (body) {
-		scrollBarWidth = window.innerWidth - body.offsetWidth
-	}
-	const bodyStyle = body?.style
-	if (bodyStyle) {
-		if (scrollBarWidth) {
-			bodyStyle.paddingRight = scrollBarWidth + 'px'
-		}
-		bodyStyle.overscrollBehaviorY = 'contain'
-		bodyStyle.overflowY = 'hidden'
-	}
-})
-
-onUnmounted(() => {
-	const bodyStyle = document.querySelector('body')?.style
-	if (bodyStyle) {
-		bodyStyle.paddingRight = '0px'
-		bodyStyle.overscrollBehaviorY = 'auto'
-		bodyStyle.overflowY = 'auto'
-	}
-})
 </script>
 
 <style lang="stylus">

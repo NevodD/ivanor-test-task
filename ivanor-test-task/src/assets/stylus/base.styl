@@ -7,6 +7,7 @@ html
 	-ms-text-size-adjust: 100%;
 	-webkit-text-size-adjust: 100%;
 	font-size: fontSize(375)
+	scrollbar-gutter: stable
 	@media $desktop
 		font-size: fontSize(1440)
 	@media $bigScreen
@@ -24,13 +25,12 @@ a
 button
 	border: none
 	background-color transparent
-	cursor pointer
 	font-family: inherit
 	font-weight: inherit
 	font-size: inherit
 	color inherit
 	&:hover
-		cursor pointer //for safari
+		cursor pointer
 
 img
 	max-width: 100%;
@@ -47,9 +47,14 @@ body
 	line-height normal
 	color: $textMain
 	background-color: $bgMain
+	scroll-behavior: smooth
 	@media $desktop
 		font-size: rem(14)
 
+body:has(.freeze-scroll)
+body:has(.freeze-scroll)
+	overscroll-behavior-y: contain
+	overflow-y: hidden
 
 
 ul, ol, dl

@@ -13,9 +13,9 @@ class Request {
 		this.api = import.meta.env.VITE_APP_ORDERS_API
 	}
 	
-	send (type, parameters = '') {
+	send (type, parameters = '', id) {
 		const appStore = useAppStore()
-		const {url, method} = this.getUrl(type, new URLSearchParams(parameters).toString())
+		const {url, method} = this.getUrl(type, new URLSearchParams(parameters).toString(), id)
 		let options = {}
 		let headers = {}
 		if(method === 'get') {
@@ -48,12 +48,13 @@ class Request {
 		})
 	}
 	
-	getUrl(type, parameters = '') {
+	getUrl(type, parameters = '', id) {
 		if (!this.api) this.setApi()
 		let basePath = this.api
 
 		return {
 			'getOrders': {url: basePath + '/orders' + (parameters ? '?' + parameters : ''), method: 'get'},
+			'getInfoAboutOrder': {url: basePath + '/order/' + id, method: 'get'},
 
 		}[type];
 	}
