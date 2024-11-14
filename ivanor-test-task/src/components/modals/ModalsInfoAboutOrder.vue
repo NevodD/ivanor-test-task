@@ -30,11 +30,11 @@
 						<dl class="modals-info-about-order__list">
 							<div class="modals-info-about-order__item">
 								<dt class="modals-info-about-order__dt">Фамилия</dt>
-								<dd class="modals-info-about-order__dd">{{ infoAboutOrder.client.firstname }}</dd>
+								<dd class="modals-info-about-order__dd">{{ infoAboutOrder.client.lastname }}</dd>
 							</div>
 							<div class="modals-info-about-order__item">
 								<dt class="modals-info-about-order__dt">Имя</dt>
-								<dd class="modals-info-about-order__dd">{{ infoAboutOrder.client.lastname }}</dd>
+								<dd class="modals-info-about-order__dd">{{ infoAboutOrder.client.firstname }}</dd>
 							</div>
 							<div class="modals-info-about-order__item">
 								<dt class="modals-info-about-order__dt">Телефон</dt>
