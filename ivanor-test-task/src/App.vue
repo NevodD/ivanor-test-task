@@ -3,7 +3,7 @@
     <div class="orders__search">
       <div class="orders__search-wrapper">
         <label class="orders__label">
-          <input class="orders__input" :type="formData.search.type" :name="formData.search.name" inputmode="numeric" :placeholder="formData.search.placeholder" :value="formData.search.value" @input="formData.search.value = $event.target.value, validateInput(formData.search)">
+          <input class="orders__input" :type="formData.search.type" :name="formData.search.name" inputmode="numeric" :placeholder="formData.search.placeholder" :value="formData.search.value" @keydown.enter="searchOrder" @input="formData.search.value = $event.target.value, validateInput(formData.search)">
           <span v-if="formData.search.error" class="orders__error">{{ formData.search.error }}</span>
         </label>
         <button class="main-button orders__button" @click="searchOrder">искать</button>
@@ -16,14 +16,14 @@
           <span class="orders__placeholder">
             {{ formData.dateFrom.placeholder }}
           </span>
-          <input class="orders__input" :type="formData.dateFrom.type" :name="formData.dateFrom.name" inputmode="numeric" v-model="formData.dateFrom.value" :min="formData.dateFrom.min" :max="formData.dateFrom.max" @change="validateInput(formData.dateFrom)">
+          <input class="orders__input" :type="formData.dateFrom.type" :name="formData.dateFrom.name" inputmode="numeric" v-model="formData.dateFrom.value" :min="formData.dateFrom.min" :max="formData.dateFrom.max" @keydown.enter.prevent="filtersOrder" @change="validateInput(formData.dateFrom)">
           <span v-if="formData.dateFrom.error" class="orders__error">{{ formData.dateFrom.error }}</span>
         </label>
         <label class="orders__label">
           <span class="orders__placeholder">
             {{ formData.dateTo.placeholder }}
           </span>
-          <input class="orders__input" :type="formData.dateTo.type" :name="formData.dateTo.name" inputmode="numeric" v-model="formData.dateTo.value" :min="formData.dateTo.min" :max="formData.dateTo.max" @change="validateInput(formData.dateTo)">
+          <input class="orders__input" :type="formData.dateTo.type" :name="formData.dateTo.name" inputmode="numeric" v-model="formData.dateTo.value" :min="formData.dateTo.min" :max="formData.dateTo.max" @keydown.enter.prevent="filtersOrder" @change="validateInput(formData.dateTo)">
           <span v-if="formData.dateTo.error" class="orders__error">{{ formData.dateTo.error }}</span>
         </label>
         <div v-if="formData.status.items.length" class="orders__select-wrapper" :class="{ active: toggleSelect }">
@@ -31,7 +31,7 @@
           <ul class="orders__select">
             <li class="orders__option" v-for="item in formData.status.items" :key="item.id">
               <label class="orders__label-checkbox">
-                <input class="orders__select-input" :type="formData.status.type" :name="formData.status.name" :value="item.id" v-model="formData.status.value" @change="validateInput(formData.status)">
+                <input class="orders__select-input" :type="formData.status.type" :name="formData.status.name" :value="item.id" v-model="formData.status.value" @keydown.enter="filtersOrder" @change="validateInput(formData.status)">
                 {{ item.title }}
               </label>
             </li>
