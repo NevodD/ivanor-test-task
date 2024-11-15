@@ -27,12 +27,12 @@
           <span v-if="formData.dateTo.error" class="orders__error">{{ formData.dateTo.error }}</span>
         </label>
         <div v-if="formData.status.items.length" class="orders__select-wrapper" :class="{ active: toggleSelect }">
-          <button class="orders__select-button" @click="toggleSelect = !toggleSelect">Статус заказа</button>
+          <button class="orders__select-button" @click="toggleSelect = !toggleSelect">Статус заказа<span v-if="formData.status.value.length" class="orders__selected">{{ formData.status.value.length }}</span></button>
           <ul class="orders__select">
             <li class="orders__option" v-for="item in formData.status.items" :key="item.id">
               <label class="orders__label-checkbox">
+                <input class="orders__select-input" :type="formData.status.type" :name="formData.status.name" :value="item.id" v-model="formData.status.value" @change="validateInput(formData.status)">
                 {{ item.title }}
-                <input class="input-hidden" :type="formData.status.type" :name="formData.status.name" :value="item.id" v-model="formData.status.value" @change="validateInput(formData.status)">
               </label>
             </li>
           </ul>
@@ -310,7 +310,8 @@
     &__label-checkbox
       display flex
       align-items center
-      padding rem(5)
+      column-gap rem(5)
+      padding rem(5) rem(10)
       min-height rem(30)
       @media $hover
         &:hover
@@ -320,11 +321,23 @@
       background-color rgba($bgContrast, 0.1)
 
     &__input
+      display flex
+      align-items center
       padding rem(13) rem(20)
       border rem(1) solid $bordertTable
+      min-height rem(46)
 
     &__input[type=date]
       position relative
+
+    &__input[type=date]::-webkit-calendar-picker-indicator
+      position absolute
+      top 50%
+      right 5%
+      inset 0
+      width 100%
+      height 100%
+      background transparent
 
     &__input[type=date]::before
       display block
@@ -351,9 +364,13 @@
         transform rotateX(180deg)
 
     &__select-button
+      display flex
+      align-items center
+      justify-content space-between
       width 100%
+      min-height rem(46)
       text-align left
-      padding rem(14) rem(20)
+      padding rem(10) rem(50) rem(10) rem(20) 
       border rem(1) solid $bordertTable
 
     &__select-button:after
@@ -382,6 +399,21 @@
       visibility hidden
       overflow hidden
       transition $transition-duration
+
+    &__select-input
+      width rem(15)
+      height rem(15)
+      accent-color $bgContrast
+
+    &__selected
+      display flex
+      align-items center
+      justify-content center
+      width rem(20)
+      height rem(20)
+      border-radius 50%
+      background-color $bgContrast
+      color $textContrast
 
     &__error
       color $textError
