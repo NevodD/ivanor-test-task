@@ -38,8 +38,8 @@
           </ul>
         </div>
         <button class="main-button orders__button" @click="filtersOrder">искать</button>
+        <p v-if="filtersError" class="orders__search-error orders__search-error_filters">{{ filtersError }}</p>
       </div>
-      <p v-if="filtersError" class="orders__search-error">{{ filtersError }}</p>
     </div>
       
     <table v-if="orders.length" class="orders__table">
@@ -242,7 +242,7 @@
 
   const filtersOrder = async () => {
     toggleSelect.value = false
-    if(formData.dateFrom.value || formData.dateTo.value || formData.status.value) {
+    if(formData.dateFrom.value || formData.dateTo.value || formData.status.value.length) {
       const parameters = {
         dateFrom: formData.dateFrom.value,
         dateTo: formData.dateTo.value,
@@ -265,6 +265,13 @@
       formData.search.value = formData.search.value.replace(/[^\d]/g, '');
       if(searchError.value) {
         searchError.value = ''
+      }
+    }
+  })
+  watch(() => [formData.dateFrom.value, formData.dateTo.value, formData.status.value], () => {
+    if(formData.dateFrom.value || formData.dateTo.value || formData.status.value.length) {
+      if(filtersError.value) {
+        filtersError.value = ''
       }
     }
   })
@@ -295,6 +302,11 @@
       align-items start
       column-gap rem(20)
       row-gap rem(5)
+
+    &__search-error_filters
+      margin-top rem(-10)
+      @media $desktop
+        margin-top 0
 
     &__label
       position relative
