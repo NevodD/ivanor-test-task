@@ -118,7 +118,9 @@
   const toggleSelect = ref(false)
 
   const removeToggleSelect = () => {
-    toggleSelect.value = false
+    if(toggleSelect.value) {
+      toggleSelect.value = false
+    }
   }
 
   const loaderMini = ref(null)
