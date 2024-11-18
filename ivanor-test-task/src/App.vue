@@ -27,10 +27,10 @@
           <span v-if="formData.dateTo.error" class="orders__error">{{ formData.dateTo.error }}</span>
         </label>
         <div v-if="formData.status.items.length" class="orders__select-wrapper" :class="{ active: toggleSelect }">
-          <button class="orders__select-button" @click="toggleSelect = !toggleSelect">Статус заказа<span v-if="formData.status.value.length" class="orders__selected">{{ formData.status.value.length }}</span></button>
+          <button class="orders__select-button" @click.stop="toggleSelect = !toggleSelect">Статус заказа<span v-if="formData.status.value.length" class="orders__selected">{{ formData.status.value.length }}</span></button>
           <ul class="orders__select">
             <li class="orders__option" v-for="item in formData.status.items" :key="item.id">
-              <label class="orders__label-checkbox">
+              <label class="orders__label-checkbox" @click.stop>
                 <input class="orders__select-input" :type="formData.status.type" :name="formData.status.name" :value="item.id" v-model="formData.status.value" @keydown.enter="filtersOrder" @change="validateInput(formData.status)">
                 {{ item.title }}
               </label>
@@ -72,7 +72,7 @@
 </template>
 
 <script setup>
-  import { ref, computed, onMounted, watch, reactive } from 'vue';
+  import { ref, computed, onMounted, watch, reactive, onUnmounted } from 'vue';
   import { useAppStore } from '@/stores/app.js'
   import { useOrdersStore } from '@/stores/orders';
   import Loader from '@/components/Loader.vue';
@@ -116,6 +116,10 @@
   ]
 
   const toggleSelect = ref(false)
+
+  const removeToggleSelect = () => {
+    toggleSelect.value = false
+  }
 
   const loaderMini = ref(null)
   const loaderMiniShow = computed(() => {
@@ -241,7 +245,6 @@
   }
 
   const filtersOrder = async () => {
-    toggleSelect.value = false
     if(formData.dateFrom.value || formData.dateTo.value || formData.status.value.length) {
       const parameters = {
         dateFrom: formData.dateFrom.value,
@@ -276,6 +279,14 @@
     }
   })
 
+  
+  onMounted(() => {
+    document.querySelector('body').addEventListener('click', removeToggleSelect)
+  })
+  
+  onUnmounted(() => {
+    document.querySelector('body').removeEventListener('click', removeToggleSelect)
+  })
 </script>
 
 
