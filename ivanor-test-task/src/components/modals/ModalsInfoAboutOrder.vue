@@ -2,7 +2,9 @@
 	<div class="modals-info-about-order freeze-scroll" :class="{ close }">
 		<div class="modals-info-about-order__wrapper" :class="{ close }">
 			<h2 class="modals-info-about-order__title">Информация о заказе</h2>
-			<div class="modals-info-about-order__inner">
+			<button v-if="infoAboutOrder" class="main-button modals-info-about-order__delete-button" @click="deleteOrder(infoAboutOrder.id)">Удалить заказ</button>
+			<p v-if="deleteErrors" class="modals-info-about-order__delete-text">{{ deleteErrors }}</p>
+			<div v-if="infoAboutOrder" class="modals-info-about-order__inner">
 				<ul class="modals-info-about-order__inner-list">
 					<li class="modals-info-about-order__inner-item">
 						<h3 class="modals-info-about-order__subtitle">Данные по заказу</h3>
@@ -91,6 +93,7 @@
 					</li>
 				</ul>
 			</div>
+			<p v-if="infoAboutStatusDeleteOrder" class="modals-info-about-order__delete-text">{{ infoAboutStatusDeleteOrder }}</p>
 			<button class="modals-info-about-order__close" @click="closeModals"><span class="visually-hidden">закрыть модальное окно</span></button>
 		</div>
 	</div>
@@ -103,14 +106,25 @@
 
 	const close = ref(false)
 
+	const deleteErrors = ref(null)
+
 	const infoAboutOrder = computed(() => {
 		return ordersStore.infoAboutOrder
 	})
+
+	const infoAboutStatusDeleteOrder = computed(() => {
+		return ordersStore.infoAboutStatusDeleteOrder
+	})
+
+	const deleteOrder = async (id) => {
+    deleteErrors.value = await ordersStore.deleteOrder(id)
+  }
 
 	const closeModals = () => {
 		close.value = true
 		setTimeout(() => {
 			ordersStore.infoAboutOrder = null
+			ordersStore.infoAboutStatusDeleteOrder = null
 			close.value = false
 		}, 300)
 	
@@ -130,6 +144,10 @@
 
 		&.close
 			animation hidden-item-opacity 0.5s linear
+
+		&__delete-button
+			width max-content
+			margin 0 auto
 
 		&__wrapper
 			display flex
@@ -200,6 +218,9 @@
 			display flex
 			flex-direction column
 			row-gap rem(20)
+
+		&__delete-text
+			text-align center
 
 		&__close
 			position absolute

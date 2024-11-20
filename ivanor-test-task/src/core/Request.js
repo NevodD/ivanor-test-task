@@ -27,6 +27,16 @@ class Request {
 				credentials: 'include',
 			}
 		}
+
+		if(method === 'delete') {
+			headers = {
+				'Token': import.meta.env.VITE_APP_ORDERS_TOKEN,
+			},
+			options = {
+				method : 'delete',
+				credentials: 'include',
+			}
+		}
 		
 		return new Promise((resolve) => {
 			const timer = setTimeout(() => {appStore.loader = true}, 500);
@@ -52,7 +62,7 @@ class Request {
 		return {
 			'getOrders': {url: basePath + '/orders' + (parameters ? '?' + parameters : ''), method: 'get'},
 			'getInfoAboutOrder': {url: basePath + '/order/' + id, method: 'get'},
-
+			'deleteOrder': {url: basePath + '/order/' + id, method: 'delete'},
 		}[type];
 	}
 
