@@ -66,7 +66,7 @@
       <LoaderMini />
     </div>
   </div>
-  <ModalsInfoAboutOrder v-if="infoAboutOrder" />
+  <ModalsInfoAboutOrder v-if="showInfoAboutOrder" />
   <Loader v-if="appStore.loader" />
   <ErrorPage v-if="appStore.error" />
 </template>
@@ -85,6 +85,10 @@
 
   const appStore = useAppStore()
   const ordersStore = useOrdersStore()
+
+  const showInfoAboutOrder = computed(() => {
+    return ordersStore.showInfoAboutOrder
+  })
 
   const headersForTable = ['Номер заказа (ID)', 'Дата-время создания заказа', 'Статус заказа', 'Тип отгрузки', 'Дата отгрузки', 'Способ оплаты', 'Место отгрузки (адрес&nbsp;магазина)', 'ФИО клиента', 'Сумма заказа', 'Количество товаров в&nbsp;заказе', 'Кто создал заказ (оператор)']
 

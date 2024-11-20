@@ -93,7 +93,7 @@
 					</li>
 				</ul>
 			</div>
-			<p v-if="infoAboutStatusDeleteOrder" class="modals-info-about-order__delete-text">{{ infoAboutStatusDeleteOrder }}</p>
+			<p v-if="infoAboutStatusDeleteOrder" class="modals-info-about-order__delete-text">Заказ был удалён</p>
 			<button class="modals-info-about-order__close" @click="closeModals"><span class="visually-hidden">закрыть модальное окно</span></button>
 		</div>
 	</div>
@@ -125,6 +125,7 @@
 		setTimeout(() => {
 			ordersStore.infoAboutOrder = null
 			ordersStore.infoAboutStatusDeleteOrder = null
+			ordersStore.showInfoAboutOrder = false
 			close.value = false
 		}, 300)
 	

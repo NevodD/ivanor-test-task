@@ -7,6 +7,8 @@ export const useOrdersStore = defineStore('orders', () => {
 
 	const infoAboutOrder = ref(null)
 
+	const showInfoAboutOrder = ref(false)
+
 	const infoAboutStatusDeleteOrder = ref(null)
 	
 	const getOrders = async (parameters = '') => {
@@ -25,6 +27,7 @@ export const useOrdersStore = defineStore('orders', () => {
 		if (response?.status === 200) {
 			const data = await response.json()
 			infoAboutOrder.value = data.order
+			showInfoAboutOrder.value = true
 		} else {
 			infoAboutOrder.value = null
 			return await response.text()
@@ -33,18 +36,21 @@ export const useOrdersStore = defineStore('orders', () => {
 
 	const deleteOrder = async (id) => {
 		const response = await Request.send('deleteOrder', '', id)
-		if (response?.status === 204) {
-			const data = await response.text()
-			infoAboutStatusDeleteOrder.value = data
+		console.log(response);
+		if (response) {
+			infoAboutStatusDeleteOrder.value = true
+			infoAboutOrder.value = null
+			getOrders()
 		} else {
 			infoAboutStatusDeleteOrder.value = null
-			return await response.text()
+			infoAboutOrder.value = null
 		}
 	}
 
 	return {
 		orders,
 		infoAboutOrder,
+		showInfoAboutOrder,
 		infoAboutStatusDeleteOrder,
 		getOrders,
 		deleteOrder,
